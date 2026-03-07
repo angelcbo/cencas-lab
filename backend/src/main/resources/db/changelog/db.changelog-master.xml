@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- ── Sprint 1: Tenant · Auth · Users ───────────────────────────────── -->
+    <!-- Inclusion order = execution order = FK dependency order.             -->
+    <include file="db/changelog/001-tenants.xml"/>
+    <include file="db/changelog/002-users.xml"/>
+    <include file="db/changelog/003-auth.xml"/>
+    <include file="db/changelog/010-audit.xml"/>
+
+    <!-- ── Sprint 2: Patients ─────────────────────────────────────────────── -->
+    <!-- <include file="db/changelog/004-patients.xml"/> -->
+
+    <!-- ── Sprint 3: Catalog ──────────────────────────────────────────────── -->
+    <!-- <include file="db/changelog/005-catalog.xml"/> -->
+
+    <!-- ── Sprint 4: Orders · Samples ─────────────────────────────────────── -->
+    <!-- <include file="db/changelog/006-orders.xml"/> -->
+    <!-- <include file="db/changelog/007-samples.xml"/> -->
+
+    <!-- ── Sprint 5: Results ──────────────────────────────────────────────── -->
+    <!-- <include file="db/changelog/008-results.xml"/> -->
+
+    <!-- ── Sprint 7: Billing ──────────────────────────────────────────────── -->
+    <!-- <include file="db/changelog/009-billing.xml"/> -->
+
+</databaseChangeLog>

@@ -1,0 +1,70 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: cenicast-db
+    environment:
+      POSTGRES_DB: cenicast_lis
+      POSTGRES_USER: cenicast
+      POSTGRES_PASSWORD: cenicast
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cenicast -d cenicast_lis"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cenicast-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_URL: jdbc:postgresql://db:5432/cenicast_lis
+      DB_USER: cenicast
+      DB_PASSWORD: cenicast
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cenicast-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  # pgAdmin — only starts when explicitly requested:
+  #   docker-compose --profile tools up
+  # Access at http://localhost:5050
+  # Connect to host "db", port 5432, user/pass from DB_USER / DB_PASSWORD
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: cenicast-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@local.dev}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    profiles:
+      - tools
+
+volumes:
+  postgres_data:
