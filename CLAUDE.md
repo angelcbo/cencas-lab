@@ -42,7 +42,7 @@ README.md
 | Database | **PostgreSQL 15+** | JSONB for audit, native UUID, RLS backstop, recursive CTEs |
 | Frontend | **React + TypeScript + Vite (SPA)** | No SSR needed for B2B auth-gated tool; simpler than Next.js |
 | Multi-tenancy | **Row-level `tenant_id UUID NOT NULL`** | Simpler at MVP scale (1–3 tenants); Hibernate @Filter enforces it |
-| Migrations | **Liquibase only** | XML changelogs, named `001-tenants.xml` etc. No Flyway, no `V1__` naming |
+| Migrations | **Liquibase only** | YAML changelogs. Each entity in its own subfolder (`NNN-description/`). One `changelog.yml` per folder, one `.sql` per entity. No Flyway, no `V1__` naming. |
 | Auth | JWT access token (15 min, HS256) + opaque refresh token (30 days, httpOnly cookie) | Standard stateless auth with rotation |
 | Password hashing | BCrypt strength 12 | Spring Security default |
 | UI library | MUI v5 (Material UI) | — |
@@ -250,7 +250,7 @@ HTTP Request
 
 ## Audit Strategy
 
-### `audit_events` table (changeset `010-audit.xml`)
+### `audit_events` table (changeset `010-create-audit-events`)
 ```sql
 CREATE TABLE audit_events (
     id             UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -342,23 +342,31 @@ audit_events      — see Audit Strategy section above
 
 ## Liquibase Changeset Plan
 
-File format: **XML only**. Named `NNN-description.xml`. No Flyway-style `V1__` naming. No YAML. No SQL files.
+File format: **YAML only** (`changelog.yml`). SQL in a separate `.sql` file per entity. Each entity in its own subfolder (`NNN-description/`). No XML. No SQL inline in changelog files. No Flyway-style `V1__` naming.
 
 Inclusion order in master changelog = execution order = dependency order. Never include a file before its FK targets exist.
 
 ```
 src/main/resources/db/changelog/
-├── db.changelog-master.xml    ← master, <include> entries in dependency order
-├── 001-tenants.xml            Sprint 1  — tenants table (no FKs to other tables)
-├── 002-users.xml              Sprint 1  — users table (FK → tenants)
-├── 003-auth.xml               Sprint 1  — refresh_tokens (FK → users, tenants)
-├── 004-patients.xml           Sprint 2  — patients (FK → tenants)
-├── 005-catalog.xml            Sprint 3  — studies, panels, reference_ranges
-├── 006-orders.xml             Sprint 4  — orders, order_items (FK → patients)
-├── 007-samples.xml            Sprint 4  — samples (FK → orders)
-├── 008-results.xml            Sprint 5  — results (FK → order_items)
-├── 009-billing.xml            Sprint 7  — billing_invoices (FK → orders)
-└── 010-audit.xml              Sprint 1  — audit_events (no app-level FKs)
+├── db.changelog-master.yml
+├── 001-tenants/               Sprint 1  — tenants table (no FKs to other tables)
+│   ├── changelog.yml
+│   └── 001-create-tenants.sql
+├── 002-users/                 Sprint 1  — users table (FK → tenants)
+│   ├── changelog.yml
+│   └── 001-create-users.sql
+├── 003-auth/                  Sprint 1  — refresh_tokens (FK → users, tenants)
+│   ├── changelog.yml
+│   └── 001-create-refresh-tokens.sql
+├── 004-patients/              Sprint 2  — patients (FK → tenants)
+├── 005-catalog/               Sprint 3  — studies, panels, reference_ranges
+├── 006-orders/                Sprint 4  — orders, order_items (FK → patients)
+├── 007-samples/               Sprint 4  — samples (FK → orders)
+├── 008-results/               Sprint 5  — results (FK → order_items)
+├── 009-billing/               Sprint 7  — billing_invoices (FK → orders)
+└── 010-audit/                 Sprint 1  — audit_events (no app-level FKs)
+    ├── changelog.yml
+    └── 001-create-audit-events.sql
 ```
 
 **Why 002 = users and 003 = auth:** `refresh_tokens` has a FK to `users`. Users must be created first.

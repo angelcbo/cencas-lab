@@ -22,8 +22,12 @@ public class SecurityConfig {
 
     private static final String[] PUBLIC_PATHS = {
             "/actuator/health",
-            "/api/v1/docs/**",
-            "/api/v1/api-docs/**",
+            "/api/v1/docs",          // exact path (entry point; redirects to swagger-ui)
+            "/api/v1/docs/**",       // swagger-ui resources under configured path
+            "/api/v1/swagger-ui/**", // springdoc redirects here internally
+            "/api/v1/api-docs",      // exact path (OpenAPI JSON)
+            "/api/v1/api-docs/**",   // spec sub-paths (e.g. /swagger-config)
+            "/webjars/**",           // swagger-ui static assets (JS, CSS) served by springdoc
             "/api/v1/auth/**"
     };
 
