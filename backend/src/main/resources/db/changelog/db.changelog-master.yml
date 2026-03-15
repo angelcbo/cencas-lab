@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - include:
+      file: 001-tenants/changelog.yml
+      relativeToChangelogFile: true
+  - include:
+      file: 002-users/changelog.yml
+      relativeToChangelogFile: true
+  - include:
+      file: 003-auth/changelog.yml
+      relativeToChangelogFile: true
+  - include:
+      file: 004-catalog/changelog.yml
+      relativeToChangelogFile: true
+  - include:
+      file: 010-audit/changelog.yml
+      relativeToChangelogFile: true

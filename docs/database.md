@@ -24,38 +24,68 @@ A database migration tool tracks changes to your schema over time. Instead of ru
 
 ### Our conventions (mandatory — do not deviate)
 
-- **Format: XML only.** No YAML, no SQL files, no Groovy.
-- **Naming: `NNN-description.xml`** — e.g., `001-tenants.xml`, `010-audit.xml`. No Flyway-style `V1__` naming.
+- **Format: YAML only.** Each entity lives in its own subfolder (`NNN-description/`) with a `changelog.yml` orchestrator and a `.sql` file for the full schema. No XML. No inline SQL in changelog files.
+- **Naming: `NNN-description/`** — e.g., `001-tenants/`, `010-audit/`. No Flyway-style `V1__` naming.
 - **Inclusion order = FK dependency order.** A table must exist before another table references it with a foreign key.
 - **`ddl-auto: validate`** — Hibernate does NOT auto-create or modify schema. Liquibase is the single source of truth for schema. If your entity field doesn't match the schema, the application will refuse to start.
+- **`logicalFilePath`** on every `changelog.yml` — stabilizes changeset identity against future file moves.
+- **Rollback:** `DROP TABLE IF EXISTS <table>;` — no CASCADE.
+
+### Structure
+
+```
+NNN-description/
+├── changelog.yml            ← Liquibase orchestrator (YAML)
+└── 001-create-<table>.sql   ← full schema: CREATE TABLE + indexes + COMMENTs
+```
+
+**`changelog.yml` template:**
+```yaml
+databaseChangeLog:
+  - logicalFilePath: db/changelog/NNN-description/changelog.yml
+
+  - changeSet:
+      id: NNN-create-<table>
+      author: cenicast
+      changes:
+        - sqlFile:
+            path: 001-create-<table>.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            endDelimiter: ";"
+            stripComments: false
+      rollback:
+        - sql:
+            sql: "DROP TABLE IF EXISTS <table>;"
+```
 
 ### Master changelog
 
-`backend/src/main/resources/db/changelog/db.changelog-master.xml`
+`backend/src/main/resources/db/changelog/db.changelog-master.yml`
 
-This file lists all changeset files in order. **Every new changeset file must be added here** in the correct position (after its FK dependencies).
+This file lists all changeset folders in order. **Every new changeset folder must be added here** in the correct position (after its FK dependencies). No commented-out future entries — new sprints add their own line when ready.
 
 ### Active changesets (Sprint 1)
 
-| File | Table | Depends on |
+| Folder | Table | Depends on |
 |---|---|---|
-| `001-tenants.xml` | `tenants` | Nothing |
-| `002-users.xml` | `users` | `tenants` (FK) |
-| `003-auth.xml` | `refresh_tokens` | `users`, `tenants` (FKs) |
-| `010-audit.xml` | `audit_events` | Nothing (intentional — no app FKs) |
+| `001-tenants/` | `tenants` | Nothing |
+| `002-users/` | `users` | `tenants` (FK) |
+| `003-auth/` | `refresh_tokens` | `users`, `tenants` (FKs) |
+| `010-audit/` | `audit_events` | Nothing (intentional — no app FKs) |
 
 > Why `010` instead of `004`? Audit is logically grouped with the auth/users Sprint 1 work, but numbered with a gap to leave room for domain entity tables (004–009) that will be added in later sprints.
 
-### Planned changesets (commented out in master)
+### Planned changesets (added when the sprint begins)
 
-| File | Table | Sprint |
+| Folder | Table | Sprint |
 |---|---|---|
-| `004-patients.xml` | `patients` | Sprint 2 |
-| `005-catalog.xml` | `catalog_studies`, `catalog_panels`, `reference_ranges` | Sprint 3 |
-| `006-orders.xml` | `orders`, `order_items` | Sprint 4 |
-| `007-samples.xml` | `samples` | Sprint 4 |
-| `008-results.xml` | `results` | Sprint 5 |
-| `009-billing.xml` | `billing_invoices` | Sprint 7 |
+| `004-patients/` | `patients` | Sprint 2 |
+| `005-catalog/` | `catalog_studies`, `catalog_panels`, `reference_ranges` | Sprint 3 |
+| `006-orders/` | `orders`, `order_items` | Sprint 4 |
+| `007-samples/` | `samples` | Sprint 4 |
+| `008-results/` | `results` | Sprint 5 |
+| `009-billing/` | `billing_invoices` | Sprint 7 |
 
 ---
 
@@ -243,7 +273,7 @@ When adding a new table in a future sprint, follow this checklist:
 - [ ] Use `TIMESTAMPTZ NOT NULL DEFAULT NOW()` for all datetime columns
 - [ ] If tenant-scoped: add `tenant_id UUID NOT NULL REFERENCES tenants(id)` with an index
 - [ ] Use `NUMERIC(12,2)` for money; `NUMERIC(5,4)` for rates/percentages
-- [ ] Add changeset to `db.changelog-master.xml` in the correct FK dependency order
+- [ ] Add a `NNN-description/` subfolder with `changelog.yml` and a `.sql` file; register it in `db.changelog-master.yml` in the correct FK dependency order
 - [ ] Update the `TenantAwareEntity` subclass (or declare `@Filter` directly on the entity)
 - [ ] Add `findByIdWithFilter` JPQL query to the repository (see [Multi-Tenancy](./multitenancy.md))
 - [ ] Write a Liquibase comment on each column explaining what it stores

@@ -21,7 +21,11 @@ docker compose version    # Docker Compose version v2.x.x or higher
 
 ---
 
-## Clone and Start
+## Two Ways to Run Locally
+
+### Option A — Full stack via Docker Compose (simplest)
+
+Everything runs in Docker: database, backend, and frontend placeholder.
 
 ```bash
 git clone <repo-url> cenicast-lis
@@ -31,17 +35,47 @@ docker compose up --build
 
 The first run downloads images and compiles the backend — this takes 2–5 minutes. Subsequent starts are much faster.
 
-**What starts:**
-
 | Service | URL | Notes |
 |---|---|---|
 | Backend (Spring Boot) | http://localhost:8080 | REST API |
 | Frontend (nginx placeholder) | http://localhost:3000 | Static placeholder; React app is Sprint 8 |
 | PostgreSQL | localhost:5432 | DB name: `cenicast_lis`, user: `cenicast`, password: `cenicast` |
 
-You'll see the backend is ready when you see:
+You'll see the backend is ready when:
 ```
 cenicast-backend | Started LisApplication in X.XXX seconds
+```
+
+---
+
+### Option B — Database in Docker, backend on host (recommended for active backend development)
+
+Run only the database in Docker and start the Spring Boot application directly on your machine. This gives you faster restarts, easy debugger attachment, and hot-reload via your IDE.
+
+**Prerequisites for this option:** Java 17+ and Maven 3.9+ installed locally.
+
+**Step 1 — Start the database:**
+
+```bash
+# From the repository root — run once; keep it running in the background
+./backend/scripts/init_dependencies.sh
+```
+
+This starts only the PostgreSQL container and waits until it is healthy. Your global Docker and Spring Boot processes stay independent.
+
+**Step 2 — Start the backend:**
+
+```bash
+cd backend
+SPRING_PROFILES_ACTIVE=dev mvn spring-boot:run
+```
+
+The backend connects to `localhost:5432` (the container started in Step 1).
+
+**Stop the database when done:**
+
+```bash
+docker compose stop db
 ```
 
 ---

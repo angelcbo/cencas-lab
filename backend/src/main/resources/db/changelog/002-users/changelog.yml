@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - logicalFilePath: db/changelog/002-users/changelog.yml
+
+  - changeSet:
+      id: 002-create-users
+      author: cenicast
+      changes:
+        - sqlFile:
+            path: 001-create-users.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            endDelimiter: ";"
+            stripComments: false
+      rollback:
+        - sql:
+            sql: "DROP TABLE IF EXISTS users;"

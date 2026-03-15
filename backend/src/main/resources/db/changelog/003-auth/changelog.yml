@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - logicalFilePath: db/changelog/003-auth/changelog.yml
+
+  - changeSet:
+      id: 003-create-refresh-tokens
+      author: cenicast
+      changes:
+        - sqlFile:
+            path: 001-create-refresh-tokens.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            endDelimiter: ";"
+            stripComments: false
+      rollback:
+        - sql:
+            sql: "DROP TABLE IF EXISTS refresh_tokens;"

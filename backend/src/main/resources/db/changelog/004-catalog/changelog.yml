@@ -1,0 +1,58 @@
+databaseChangeLog:
+  - logicalFilePath: db/changelog/004-catalog/changelog.yml
+
+  - changeSet:
+      id: 004-create-analytes
+      author: cenicast
+      changes:
+        - sqlFile:
+            path: 001-create-analytes.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            endDelimiter: ";"
+            stripComments: false
+      rollback:
+        - sql:
+            sql: "DROP TABLE IF EXISTS catalog_analytes;"
+
+  - changeSet:
+      id: 004-create-techniques
+      author: cenicast
+      changes:
+        - sqlFile:
+            path: 002-create-techniques.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            endDelimiter: ";"
+            stripComments: false
+      rollback:
+        - sql:
+            sql: "DROP TABLE IF EXISTS catalog_techniques;"
+
+  - changeSet:
+      id: 004-create-specimen-types
+      author: cenicast
+      changes:
+        - sqlFile:
+            path: 003-create-specimen-types.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            endDelimiter: ";"
+            stripComments: false
+      rollback:
+        - sql:
+            sql: "DROP TABLE IF EXISTS catalog_specimen_types;"
+
+  - changeSet:
+      id: 004-create-collection-containers
+      author: cenicast
+      changes:
+        - sqlFile:
+            path: 004-create-collection-containers.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            endDelimiter: ";"
+            stripComments: false
+      rollback:
+        - sql:
+            sql: "DROP TABLE IF EXISTS catalog_collection_containers;"

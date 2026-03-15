@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - logicalFilePath: db/changelog/001-tenants/changelog.yml
+
+  - changeSet:
+      id: 001-create-tenants
+      author: cenicast
+      changes:
+        - sqlFile:
+            path: 001-create-tenants.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            endDelimiter: ";"
+            stripComments: false
+      rollback:
+        - sql:
+            sql: "DROP TABLE IF EXISTS tenants;"
