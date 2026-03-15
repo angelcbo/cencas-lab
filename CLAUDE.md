@@ -45,7 +45,7 @@ README.md
 | Migrations | **Liquibase only** | YAML changelogs. Each entity in its own subfolder (`NNN-description/`). One `changelog.yml` per folder, one `.sql` per entity. No Flyway, no `V1__` naming. |
 | Auth | JWT access token (15 min, HS256) + opaque refresh token (30 days, httpOnly cookie) | Standard stateless auth with rotation |
 | Password hashing | BCrypt strength 12 | Spring Security default |
-| UI library | MUI v5 (Material UI) | — |
+| UI library | **Tailwind CSS + shadcn/ui** | Overrides original MUI v5 decision |
 | Server state | TanStack Query (React Query) | — |
 | Forms | React Hook Form + Zod | — |
 | PDF | `com.github.librepdf:openpdf` (Apache-licensed) | Implemented in Sprint 6, not deferred |
