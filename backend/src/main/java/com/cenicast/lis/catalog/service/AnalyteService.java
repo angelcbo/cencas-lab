@@ -30,7 +30,11 @@ public class AnalyteService {
     }
 
     @Transactional(readOnly = true)
-    public Page<AnalyteResponse> listAnalytes(Pageable pageable) {
+    public Page<AnalyteResponse> listAnalytes(String search, Pageable pageable) {
+        if (search != null && !search.isBlank()) {
+            return analyteRepository.findByCodeOrNameContainingIgnoreCase(search.trim(), pageable)
+                    .map(this::toResponse);
+        }
         return analyteRepository.findAll(pageable).map(this::toResponse);
     }
 

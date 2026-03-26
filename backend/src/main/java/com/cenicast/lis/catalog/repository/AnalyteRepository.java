@@ -1,6 +1,8 @@
 package com.cenicast.lis.catalog.repository;
 
 import com.cenicast.lis.catalog.model.Analyte;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,4 +21,7 @@ public interface AnalyteRepository extends JpaRepository<Analyte, UUID> {
      */
     @Query("SELECT a FROM Analyte a WHERE a.id = :id")
     Optional<Analyte> findByIdWithFilter(@Param("id") UUID id);
+
+    @Query("SELECT a FROM Analyte a WHERE LOWER(a.code) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%'))")
+    Page<Analyte> findByCodeOrNameContainingIgnoreCase(@Param("search") String search, Pageable pageable);
 }

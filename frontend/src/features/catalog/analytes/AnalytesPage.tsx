@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Pencil } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import { PageHeader } from '@/shared/components/PageHeader'
 import { analytesApi, ANALYTES_KEY, type Analyte } from './analytesApi'
 import { AnalyteFormDialog } from './AnalyteFormDialog'
@@ -17,12 +18,24 @@ export function AnalytesPage() {
   const [page, setPage] = useState(0)
   const pageSize = 20
 
+  const [searchInput, setSearchInput] = useState('')
+  const [search, setSearch] = useState('')
+
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<Analyte | undefined>()
 
+  useEffect(() => {
+    const timer = setTimeout(() => setSearch(searchInput), 400)
+    return () => clearTimeout(timer)
+  }, [searchInput])
+
+  useEffect(() => {
+    setPage(0)
+  }, [search])
+
   const { data, isLoading, isError } = useQuery({
-    queryKey: [...ANALYTES_KEY, page],
-    queryFn: () => analytesApi.list(page, pageSize),
+    queryKey: [...ANALYTES_KEY, page, search],
+    queryFn: () => analytesApi.list(page, pageSize, search),
   })
 
   const openCreate = () => {
@@ -44,6 +57,14 @@ export function AnalytesPage() {
             Nuevo analito
           </Button>
         }
+      />
+
+      <Input
+        type="search"
+        placeholder="Buscar por código o nombre..."
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
+        className="max-w-sm"
       />
 
       {isLoading && (
@@ -72,7 +93,7 @@ export function AnalytesPage() {
                 {data.content.length === 0 && (
                   <tr>
                     <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
-                      No hay analitos registrados.
+                      {search ? 'Sin resultados para la búsqueda.' : 'No hay analitos registrados.'}
                     </td>
                   </tr>
                 )}

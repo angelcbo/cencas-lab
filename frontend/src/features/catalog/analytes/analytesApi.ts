@@ -31,9 +31,15 @@ export interface UpdateAnalyteRequest {
 export const ANALYTES_KEY = ['catalog', 'analytes'] as const
 
 export const analytesApi = {
-  list: (page: number, size = 20) =>
+  list: (page: number, size = 20, search?: string) =>
     client
-      .get<PageResponse<Analyte>>('/api/v1/catalog/analytes', { params: { page, size } })
+      .get<PageResponse<Analyte>>('/api/v1/catalog/analytes', {
+        params: {
+          page,
+          size,
+          ...(search ? { search } : {}),
+        },
+      })
       .then((r) => r.data),
 
   create: (data: CreateAnalyteRequest) =>

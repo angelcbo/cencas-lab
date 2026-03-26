@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -36,8 +37,10 @@ public class AnalyteController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('LAB_ADMIN','LAB_ANALYST','LAB_RECEPTIONIST','LAB_DOCTOR')")
-    public Page<AnalyteResponse> listAnalytes(Pageable pageable) {
-        return analyteService.listAnalytes(pageable);
+    public Page<AnalyteResponse> listAnalytes(
+            @RequestParam(required = false) String search,
+            Pageable pageable) {
+        return analyteService.listAnalytes(search, pageable);
     }
 
     @GetMapping("/{id}")
