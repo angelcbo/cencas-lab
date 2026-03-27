@@ -56,3 +56,87 @@ databaseChangeLog:
       rollback:
         - sql:
             sql: "DROP TABLE IF EXISTS catalog_collection_containers;"
+
+  - changeSet:
+      id: 004-create-tests
+      author: cenicast
+      changes:
+        - sqlFile:
+            path: 005-create-tests.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            endDelimiter: ";"
+            stripComments: false
+      rollback:
+        - sql:
+            sql: "DROP TABLE IF EXISTS catalog_tests;"
+
+  - changeSet:
+      id: 004-create-test-analytes
+      author: cenicast
+      changes:
+        - sqlFile:
+            path: 006-create-test-analytes.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            endDelimiter: ";"
+            stripComments: false
+      rollback:
+        - sql:
+            sql: "DROP TABLE IF EXISTS catalog_test_analytes;"
+
+  - changeSet:
+      id: 004-create-test-techniques
+      author: cenicast
+      changes:
+        - sqlFile:
+            path: 007-create-test-techniques.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            endDelimiter: ";"
+            stripComments: false
+      rollback:
+        - sql:
+            sql: "DROP TABLE IF EXISTS catalog_test_techniques;"
+
+  - changeSet:
+      id: 004-create-test-collection-containers
+      author: cenicast
+      changes:
+        - sqlFile:
+            path: 008-create-test-collection-containers.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            endDelimiter: ";"
+            stripComments: false
+      rollback:
+        - sql:
+            sql: "DROP TABLE IF EXISTS catalog_test_collection_containers;"
+
+  - changeSet:
+      id: 004-create-panels
+      author: cenicast
+      changes:
+        - sqlFile:
+            path: 009-create-panels.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            endDelimiter: ";"
+            stripComments: false
+      rollback:
+        - sql:
+            sql: "DROP TABLE IF EXISTS catalog_panels;"
+
+  - changeSet:
+      id: 004-create-panel-tests
+      author: cenicast
+      changes:
+        - sqlFile:
+            path: 010-create-panel-tests.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            endDelimiter: ";"
+            stripComments: false
+      rollback:
+        - sql:
+            sql: "DROP TABLE IF EXISTS catalog_panel_tests;"
