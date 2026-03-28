@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, FlaskConical, Microscope, TestTube, FlaskRound } from 'lucide-react'
+import { LayoutDashboard, FlaskConical, Microscope, TestTube, FlaskRound, ClipboardList, LayoutList } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navItems = [
@@ -15,6 +15,8 @@ const navItems = [
       { label: 'Técnicas', to: '/catalog/techniques', icon: Microscope },
       { label: 'Tipos de Muestra', to: '/catalog/specimen-types', icon: TestTube },
       { label: 'Contenedores', to: '/catalog/collection-containers', icon: FlaskRound },
+      { label: 'Pruebas', to: '/catalog/tests', icon: ClipboardList },
+      { label: 'Paneles', to: '/catalog/panels', icon: LayoutList },
     ],
   },
 ]
