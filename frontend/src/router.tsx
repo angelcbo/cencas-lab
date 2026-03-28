@@ -5,6 +5,9 @@ import { ProtectedRoute } from './features/auth/ProtectedRoute'
 import { LoginPage } from './features/auth/LoginPage'
 import { DashboardPage } from './features/dashboard/DashboardPage'
 import { AnalytesPage } from './features/catalog/analytes/AnalytesPage'
+import { TechniquesPage } from './features/catalog/techniques/TechniquesPage'
+import { SpecimenTypesPage } from './features/catalog/specimen-types/SpecimenTypesPage'
+import { CollectionContainersPage } from './features/catalog/collection-containers/CollectionContainersPage'
 
 export const router = createBrowserRouter([
   {
@@ -23,6 +26,9 @@ export const router = createBrowserRouter([
               { path: '/', element: <Navigate to="/dashboard" replace /> },
               { path: '/dashboard', element: <DashboardPage /> },
               { path: '/catalog/analytes', element: <AnalytesPage /> },
+              { path: '/catalog/techniques', element: <TechniquesPage /> },
+              { path: '/catalog/specimen-types', element: <SpecimenTypesPage /> },
+              { path: '/catalog/collection-containers', element: <CollectionContainersPage /> },
             ],
           },
         ],
